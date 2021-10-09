@@ -1,0 +1,41 @@
+{
+  "name": "youtube-channels-local-manager",
+  "version": "1.0.0",
+  "description": "Now manage your all channels videos with a great manager tool.",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hamzaxeros/youtube-channels-local-manager.git"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "keywords": [
+    "youtube",
+    "channel",
+    "youtube-locally",
+    "youtube-channel",
+    "youtube-manager",
+    "youtube-management",
+    "youtube-channel-local"
+  ],
+  "author": "Hamza Hussain",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hamzaxeros/youtube-channels-local-manager/issues"
+  },
+  "homepage": "https://github.com/hamzaxeros/youtube-channels-local-manager#readme",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "inquirer": "^8.2.0",
+    "shelljs": "^0.8.4"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-google": "^0.14.0"
+  },
+  "bin": {
+    "youtube-manager": "src/index.js"
+  }
+}

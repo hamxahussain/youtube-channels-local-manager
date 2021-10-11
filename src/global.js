@@ -1,5 +1,6 @@
 const path = require("path");
 
+module.exports.YOUTUBE_DIR_NAME = "YoutubeChannels";
 module.exports.GIT_YOUTUBE_DIR_NAME = ".git_youtube_channels_resources";
 module.exports.YOUTUBE_DIR_FULL = path.join(
 	process.env.HOME,

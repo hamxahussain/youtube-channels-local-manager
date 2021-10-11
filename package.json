@@ -1,6 +1,6 @@
 {
   "name": "youtube-channels-local-manager",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Now manage your all channels videos with a great manager tool.",
   "main": "src/index.js",
   "repository": {

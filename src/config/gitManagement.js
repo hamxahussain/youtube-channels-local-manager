@@ -4,6 +4,7 @@ const {
 	list,
 	videoSorter,
 	symbols,
+	copyRecursiveSync,
 } = require("./../util/index");
 const {
 	GIT_YOUTUBE_DIR_FULL,
@@ -50,7 +51,7 @@ module.exports.getBuildGithub = () => {
 				name: "branch",
 				message: "Type your branch name: ",
 				default: "main",
-				when: !listOnlyHidden().includes(".git"),
+				when: !listOnlyHidden().includes(".temp"),
 			},
 			{
 				type: "input",
@@ -60,7 +61,7 @@ module.exports.getBuildGithub = () => {
 					chalk.red(
 						"Becarefull to pass the correct remote, otherwise you may not be able to change it "
 					),
-				when: !listOnlyHidden().includes(".git"),
+				when: !listOnlyHidden().includes(".temp"),
 				default:
 					"Exit me! < Actually it will exit the app if you didn't pass the remote URL. >",
 			},
@@ -74,61 +75,62 @@ module.exports.getBuildGithub = () => {
 				console.log("\n", chalk.greenBright("Good Bye"), " 👍\n");
 				process.exit(1);
 			} else {
+				console.log(symbols().info, "Reviewing at changes...");
+				list(GIT_YOUTUBE_DIR_FULL).map((channel) =>
+					shell.exec(`sudo rm -rf \"${channel}\"`)
+				);
+				console.log(symbols().info, "Structuring any changes...");
+				// Copy all files locally
+				if (listOnlyHidden().includes(".gitignore") === false) {
+					shell.touch(".gitignore");
+					shell
+						.cat(path.join(__dirname, "templates/gitignore.txt"))
+						.to(".gitignore");
+				}
+				const allChannelsLists = list(YOUTUBE_DIR_FULL);
+				allChannelsLists.map((channel, i) => {
+					if (
+						list(GIT_YOUTUBE_DIR_FULL).includes(channel) === false
+					) {
+						shell.mkdir(channel);
+					}
+					const allVideoOfThisChannel = videoSorter(
+						path.join(YOUTUBE_DIR_FULL, channel, "Tutorials"),
+						false
+					);
+					allVideoOfThisChannel.map((video, i) => {
+						if (list(channel).includes(video.name) === false) {
+							shell.mkdir(path.join(channel, video.name));
+						}
+						shell.cp(
+							"-fR",
+							`${path.join(
+								YOUTUBE_DIR_FULL,
+								channel,
+								"Tutorials",
+								video.value,
+								"CODE",
+								"*"
+							)}`,
+							`${path.join(channel, video.name)}`
+						);
+					});
+				});
+
+				// Lets upload to github;
+
 				if (!listOnlyHidden().includes(".git")) {
 					shell.exec("git init");
 				}
+				shell.exec("sudo rm -rf ");
 				shell.exec(`git add .`);
 				shell.exec(`git commit -m \"${answer.commit}\"`);
-				shell.exec(`git branch -M \"${answer.branch}\"`);
-				if (
-					shell.exec(`git remote add origin ${answer.answer.remote}`)
-						.stderr !== ""
-				) {
-					console.clear();
-					shell.rm("-rf", ".git");
-					console.log(
-						symbols().error,
-						"Remote URL was wrong, Try to do it again."
-					);
-					process.exit(1);
+				if (!listOnlyHidden().includes(".temp")) {
+					shell.exec(`git branch -M \"${answer.branch}\"`);
+					shell.mkdir(".temp");
+					shell.exec(`git remote add origin ${answer.remote}`);
 				}
 				shell.exec(`git push --all`);
 			}
 		});
-
-	// Copy all files locally
-	if (listOnlyHidden().includes(".gitignore") === false) {
-		shell.touch(".gitignore");
-		shell
-			.cat(path.join(__dirname, "templates/gitignore.txt"))
-			.to(".gitignore");
-	}
-	const allChannelsLists = list(YOUTUBE_DIR_FULL);
-	allChannelsLists.map((channel, i) => {
-		if (list(GIT_YOUTUBE_DIR_FULL).includes(channel) === false) {
-			shell.mkdir(channel);
-		}
-		const allVideoOfThisChannel = videoSorter(
-			path.join(YOUTUBE_DIR_FULL, channel, "Tutorials"),
-			false
-		);
-		allVideoOfThisChannel.map((video, i) => {
-			if (list(channel).includes(video.name) === false) {
-				shell.mkdir(path.join(channel, video.name));
-			}
-			shell.cp(
-				"-rf",
-				`${path.join(
-					YOUTUBE_DIR_FULL,
-					channel,
-					"Tutorials",
-					video.value,
-					"CODE",
-					"*"
-				)}`,
-				`${path.join(channel, video.name)}`
-			);
-		});
-	});
-	// Lets upload to github;
 };

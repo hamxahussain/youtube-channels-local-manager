@@ -2,6 +2,7 @@ const { list, move, listAll, listOnlyHidden } = require("./shellManager");
 const { YOUTUBE_DIR_FULL } = require("./../global");
 const chalk = require("chalk");
 const path = require("path");
+const { copyRecursiveSync } = require("./copyPasteStuffs");
 const {
 	channelsLists,
 	videoDirCreaterFormater,
@@ -125,6 +126,7 @@ module.exports = {
 	move,
 	videoDirFormatDecoder,
 	listAll,
+	copyRecursiveSync,
 	listOnlyHidden,
 	videoDirCreaterFormater,
 	exit,
